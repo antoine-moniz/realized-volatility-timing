@@ -1,11 +1,4 @@
-"""Projet final - Realized Volatility Timing.
-
-Ce package contient le pipeline complet:
-- preparation des donnees spot/options
-- estimation Heston via UKF + MLE glissant
-- construction du signal IV-RV
-- allocation dynamique des strategies carry
-"""
+"""Outils du projet Realized Volatility Timing."""
 
 from .config import HestonParams, RollingMLEConfig, UKFConfig
 from .data_pipeline import build_market_dataset

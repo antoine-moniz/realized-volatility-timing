@@ -42,7 +42,7 @@ def run_dynamic_carry_experiment(
     ukf_cfg: UKFConfig | None = None,
     mle_cfg: RollingMLEConfig | None = None,
 ) -> dict[str, pd.DataFrame]:
-    """Pipeline end-to-end: baseline carry vs carry dynamique pilote par spread IV-RV."""
+    """Exécute le pipeline complet et compare baseline et version dynamique."""
     ukf_cfg = ukf_cfg or UKFConfig()
     mle_cfg = mle_cfg or RollingMLEConfig()
 
@@ -56,8 +56,6 @@ def run_dynamic_carry_experiment(
 
     df_est = run_rolling_heston_filter(df_market=df_market, ukf_cfg=ukf_cfg, mle_cfg=mle_cfg)
     df_signal = build_spread_signal(df_estimation=df_est)
-    # AMÉLIORATION: utiliser z_cap=3.0 pour clipper les outliers extrêmes
-    # et stabiliser l'allocation dynamique (au lieu de z_cap=2.0 par défaut)
     df_mult = spread_to_multiplier(df_signal, z_cap=3.0)
 
     # 2) Positions baseline
@@ -107,7 +105,7 @@ def run_dynamic_carry_experiment_regime_based(
     ukf_cfg: UKFConfig | None = None,
     mle_cfg: RollingMLEConfig | None = None,
 ) -> dict[str, pd.DataFrame]:
-    """Pipeline with REGIME-BASED allocation (improved non-linear allocation strategy)."""
+    """Variante du pipeline avec allocation par régimes."""
     ukf_cfg = ukf_cfg or UKFConfig()
     mle_cfg = mle_cfg or RollingMLEConfig()
 
@@ -120,8 +118,6 @@ def run_dynamic_carry_experiment_regime_based(
 
     df_est = run_rolling_heston_filter(df_market=df_market, ukf_cfg=ukf_cfg, mle_cfg=mle_cfg)
     df_signal = build_spread_signal(df_estimation=df_est)
-    # AMÉLIORATION #2: Allocation non-linéaire basée sur 3 régimes
-    # Capture mieux l'asymétrie du signal IV-RV
     df_mult = spread_to_multiplier_regime_based(df_signal)
 
     df_trades_base = OptionTrade.generate_trades(
